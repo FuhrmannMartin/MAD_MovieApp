@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MovieAppMAD24</string>
+    <string name="home_screen_title">Movie App</string>
+    <string name="watchlist_screen_title">Watchlist</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.movieappmad24.ui.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun BottomButton(icon: ImageVector, text: String) {
+fun BottomButton(icon: ImageVector, text: String, isSelected: Boolean) {
     Column(
         modifier = Modifier.padding(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -25,12 +26,13 @@ fun BottomButton(icon: ImageVector, text: String) {
         Icon(
                 imageVector = icon,
                 contentDescription = text,
-                tint = Color.Black
-            )
+                tint = Color.Black,
+                modifier = Modifier
+                    .background(if (isSelected) Color.Gray.copy(alpha = 0.4f) else Color.Transparent)
+        )
         Text(
             text = text,
-            style = TextStyle(fontSize = 12.sp),
-            // color = Color.Red
+            style = TextStyle(fontSize = 12.sp)
         )
     }
 }
@@ -38,6 +40,6 @@ fun BottomButton(icon: ImageVector, text: String) {
 @Preview
 @Composable
 fun DefaultPreview(){
-    BottomButton(Icons.Default.Star, "Watchlist")
+    BottomButton(Icons.Default.Star, "Watchlist", false)
     // BottomButton(Icons.Default.Star, "Watchlist")
 }
