@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,22 +21,26 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
 import com.example.movieappmad24.MovieLazyRow
 import com.example.movieappmad24.MovieRow
-import com.example.movieappmad24.models.Movie
+import com.example.movieappmad24.di.InjectorUtils
+import com.example.movieappmad24.models.MovieWithImages
 import com.example.movieappmad24.ui.theme.MovieAppMAD24Theme
 import com.example.movieappmad24.ui.theme.SimpleTopAppBar
-import com.example.movieappmad24.viewmodels.MoviesViewModel
+import com.example.movieappmad24.viewmodels.DetailScreenViewModel
 
 @Composable
-fun DetailScreen(movieId: String, navController: NavController, movieViewModel: MoviesViewModel) {
-    val movie = movieViewModel.getMovieById(movieId)
+fun DetailScreen(id: String, navController: NavController) {
+    val viewModel: DetailScreenViewModel = viewModel(factory = InjectorUtils.provideMovieViewModelFactory(
+        LocalContext.current))
+    val movieWithImages by viewModel.getMovieById(id).collectAsState(initial = null)
 
-    if (movie != null) {
+    movieWithImages?.let { movie ->
         MovieAppMAD24Theme {
             // A surface container using the 'background' color from the theme
             Surface(
@@ -43,9 +48,9 @@ fun DetailScreen(movieId: String, navController: NavController, movieViewModel: 
                 // color = MaterialTheme.colorScheme.background
             ) {
                 Scaffold(
-                    topBar = { SimpleTopAppBar(movie.title, navController) }
+                    topBar = { SimpleTopAppBar(movie.movie.title, navController) }
                 ) { innerPadding ->
-                    ShowDetailScreen(movie, movieViewModel, innerPadding)
+                    ShowDetailScreen(movie, viewModel, innerPadding)
                 }
             }
         }
@@ -53,15 +58,15 @@ fun DetailScreen(movieId: String, navController: NavController, movieViewModel: 
 }
 
 @Composable
-fun ShowDetailScreen(movie: Movie, movieViewModel: MoviesViewModel, innerPadding: PaddingValues) {
+fun ShowDetailScreen(movieWithImages: MovieWithImages, viewModel: DetailScreenViewModel, innerPadding: PaddingValues) {
     Column(modifier = Modifier.padding(innerPadding)) {
         MovieRow(
-            movie = movie,
+            movieWithImages = movieWithImages,
             onMovieRowClick = {},
-            onFavClick = {movieId -> movieViewModel.toggleIsFavorite(movieId)}
+            onFavClick = {id -> viewModel.toggleIsFavorite(id)}
         )
-        Player(movie.trailer)
-        MovieLazyRow(movie)
+        Player(movieWithImages.movie.trailer)
+        MovieLazyRow(movieWithImages)
     }
 }
 

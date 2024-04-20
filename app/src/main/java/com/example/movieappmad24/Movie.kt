@@ -42,44 +42,47 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.movieappmad24.models.Movie
+import com.example.movieappmad24.models.MovieWithImages
 import com.example.movieappmad24.navigation.Screen
-import com.example.movieappmad24.viewmodels.MoviesViewModel
+import com.example.movieappmad24.viewmodels.FavoriteToggleViewModelInterface
 
 @Composable
-fun MovieList(movies: List<Movie>, innerPadding: PaddingValues, navController: NavHostController, movieViewModel: MoviesViewModel){
+fun <T> MovieList(moviesWithImages: List<MovieWithImages>, innerPadding: PaddingValues, navController: NavHostController, viewModel: T
+    ) where T : ViewModel, T : FavoriteToggleViewModelInterface {
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(movies) { movie ->
+        items(moviesWithImages) { movieWithImages ->
             MovieRow(
-                movie = movie,
-                onMovieRowClick = {movieId -> navController.navigate(route = Screen.Detail.passId(movieId))},
-                onFavClick = { movieId -> movieViewModel.toggleIsFavorite(movieId) }
+                movieWithImages = movieWithImages,
+                onMovieRowClick = {id -> navController.navigate(route = Screen.Detail.passId(id))},
+                onFavClick = { viewModel.toggleIsFavorite(movieWithImages) }
             )
         }
     }
 }
 
 @Composable
-fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (String) -> Boolean){
+fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit = {}, onFavClick: (MovieWithImages) -> Boolean){
     var showDetails by remember {
         mutableStateOf(false)
     }
     var isFavorite by remember {
-        mutableStateOf(movie.isFavorite)
+        mutableStateOf(movieWithImages.movie.isFavorite)
     }
 
     Card(modifier = Modifier
         .fillMaxWidth()
         .padding(5.dp)
         .clickable {
-            onMovieRowClick(movie.id)
+            onMovieRowClick(movieWithImages.movie.id)
         },
         shape = ShapeDefaults.Large,
         elevation = CardDefaults.cardElevation(10.dp)
@@ -93,7 +96,7 @@ fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (
             ) {
                 // Log.d("Tag", movie.images.first())
                 AsyncImage(
-                    model = movie.images.first(),
+                    model = movieWithImages.imageUrls.first(),
                     contentDescription = "null",
                     contentScale = ContentScale.Crop
                 )
@@ -105,7 +108,7 @@ fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (
                 ){
                     Icon(modifier = Modifier
                         .clickable {
-                            isFavorite = onFavClick(movie.id)
+                            isFavorite = onFavClick(movieWithImages)
                         },
                         tint = MaterialTheme.colorScheme.secondary,
                         imageVector =
@@ -122,7 +125,7 @@ fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = movie.title, style = TextStyle(fontWeight = FontWeight.Bold))
+                Text(text = movieWithImages.movie.title, style = TextStyle(fontWeight = FontWeight.Bold))
                 Icon(modifier = Modifier
                     .clickable {
                         showDetails = !showDetails
@@ -137,13 +140,13 @@ fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(text = "Director: ${movie.director}")
-                        Text(text = "Released: ${movie.year}")
-                        Text(text = "Genre: ${movie.genre}")
-                        Text(text = "Actors: ${movie.actors}")
-                        Text(text = "Rating: ${movie.rating}")
+                        Text(text = "Director: ${movieWithImages.movie.director}")
+                        Text(text = "Released: ${movieWithImages.movie.year}")
+                        Text(text = "Genre: ${movieWithImages.movie.genre}")
+                        Text(text = "Actors: ${movieWithImages.movie.actors}")
+                        Text(text = "Rating: ${movieWithImages.movie.rating}")
                         Divider(color = Color.LightGray, thickness = 1.dp)
-                        Text(text = "Plot: ${movie.plot}")
+                        Text(text = "Plot: ${movieWithImages.movie.plot}")
                     }
                 }
             }
@@ -152,12 +155,12 @@ fun MovieRow(movie: Movie, onMovieRowClick: (String) -> Unit = {}, onFavClick: (
 }
 
 @Composable
-fun MovieLazyRow(movie: Movie){
+fun MovieLazyRow(movieWithImages: MovieWithImages){
     LazyRow (
         modifier = Modifier
             .fillMaxSize()
     ) {
-        itemsIndexed(movie.images) { index, imageUrl ->
+        itemsIndexed(movieWithImages.imageUrls) { index, imageUrl ->
             Card(modifier = Modifier.padding(8.dp)) {
                 AsyncImage(
                     model = imageUrl,
