@@ -43,14 +43,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.movieappmad24.models.MovieWithImages
 import com.example.movieappmad24.navigation.Screen
 import com.example.movieappmad24.viewmodels.FavoriteToggleViewModelInterface
+import kotlinx.coroutines.launch
 
 @Composable
-fun <T> MovieList(moviesWithImages: List<MovieWithImages>, innerPadding: PaddingValues, navController: NavHostController, viewModel: T
+fun <T> MovieList(
+    moviesWithImages: List<MovieWithImages>,
+    innerPadding: PaddingValues,
+    navController: NavHostController,
+    viewModel: T
     ) where T : ViewModel, T : FavoriteToggleViewModelInterface {
 
     LazyColumn(
@@ -62,15 +68,18 @@ fun <T> MovieList(moviesWithImages: List<MovieWithImages>, innerPadding: Padding
         items(moviesWithImages) { movieWithImages ->
             MovieRow(
                 movieWithImages = movieWithImages,
-                onMovieRowClick = {id -> navController.navigate(route = Screen.Detail.passId(id))},
-                onFavClick = { viewModel.toggleIsFavorite(movieWithImages) }
-            )
+                onMovieRowClick = { id -> navController.navigate(route = Screen.Detail.passId(id))}
+            ) { viewModel.viewModelScope.launch { viewModel.toggleIsFavorite(movieWithImages) } }
         }
     }
 }
 
 @Composable
-fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit = {}, onFavClick: (MovieWithImages) -> Boolean){
+fun MovieRow(
+    movieWithImages: MovieWithImages,
+    onMovieRowClick: (String) -> Unit = {},
+    onFavClick: (MovieWithImages) -> Unit
+) {
     var showDetails by remember {
         mutableStateOf(false)
     }
@@ -78,12 +87,11 @@ fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit
         mutableStateOf(movieWithImages.movie.isFavorite)
     }
 
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(5.dp)
-        .clickable {
-            onMovieRowClick(movieWithImages.movie.id)
-        },
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp)
+            .clickable { onMovieRowClick(movieWithImages.movie.id) },
         shape = ShapeDefaults.Large,
         elevation = CardDefaults.cardElevation(10.dp)
     ) {
@@ -94,27 +102,31 @@ fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                // Log.d("Tag", movie.images.first())
+                // Movie image
                 AsyncImage(
                     model = movieWithImages.imageUrls.first(),
                     contentDescription = "null",
                     contentScale = ContentScale.Crop
                 )
+                // Favorite icon
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(10.dp),
                     contentAlignment = Alignment.TopEnd
-                ){
-                    Icon(modifier = Modifier
-                        .clickable {
-                            isFavorite = onFavClick(movieWithImages)
-                        },
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .clickable {
+                                isFavorite = !isFavorite
+                                onFavClick(movieWithImages)
+                            },
                         tint = MaterialTheme.colorScheme.secondary,
                         imageVector =
                         if (isFavorite) Icons.Default.Favorite
                         else Icons.Default.FavoriteBorder,
-                        contentDescription = "Add to favorites")
+                        contentDescription = "Add to favorites"
+                    )
                 }
             }
 
@@ -125,16 +137,24 @@ fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = movieWithImages.movie.title, style = TextStyle(fontWeight = FontWeight.Bold))
-                Icon(modifier = Modifier
-                    .clickable {
-                        showDetails = !showDetails
-                    },
+                // Movie title
+                Text(
+                    text = movieWithImages.movie.title,
+                    style = TextStyle(fontWeight = FontWeight.Bold)
+                )
+                // Expand/collapse icon
+                Icon(
+                    modifier = Modifier
+                        .clickable {
+                            showDetails = !showDetails
+                        },
                     imageVector =
                     if (showDetails) Icons.Filled.KeyboardArrowDown
                     else Icons.Default.KeyboardArrowUp,
-                    contentDescription = "show more")
+                    contentDescription = "show more"
+                )
             }
+            // Additional movie details
             if (showDetails) {
                 AnimatedVisibility(visible = true, enter = fadeIn() + expandVertically()) {
                     Column(
@@ -153,6 +173,7 @@ fun MovieRow(movieWithImages: MovieWithImages, onMovieRowClick: (String) -> Unit
         }
     }
 }
+
 
 @Composable
 fun MovieLazyRow(movieWithImages: MovieWithImages){

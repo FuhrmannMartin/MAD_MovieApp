@@ -20,7 +20,8 @@ import com.example.movieappmad24.viewmodels.WatchListScreenViewModel
 fun WatchListScreen(navController: NavHostController) {
     val viewModel: WatchListScreenViewModel = viewModel(factory = InjectorUtils.provideMovieViewModelFactory(
         LocalContext.current))
-    val favoriteMoviesState = viewModel.favoriteMovies.collectAsState()
+    val moviesState = viewModel.movies.collectAsState()
+
 
     MovieAppMAD24Theme {
         // A surface container using the 'background' color from the theme
@@ -33,7 +34,7 @@ fun WatchListScreen(navController: NavHostController) {
                 bottomBar = { SimpleBottomAppBar(navController) }
             ) { innerPadding ->
                 MovieList(
-                    moviesWithImages = favoriteMoviesState.value,
+                    moviesWithImages = moviesState.value,
                     innerPadding = innerPadding,
                     navController = navController,
                     viewModel = viewModel)

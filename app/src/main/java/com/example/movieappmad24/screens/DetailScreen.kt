@@ -1,5 +1,6 @@
 package com.example.movieappmad24.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -33,6 +35,7 @@ import com.example.movieappmad24.models.MovieWithImages
 import com.example.movieappmad24.ui.theme.MovieAppMAD24Theme
 import com.example.movieappmad24.ui.theme.SimpleTopAppBar
 import com.example.movieappmad24.viewmodels.DetailScreenViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(id: String, navController: NavController) {
@@ -62,9 +65,13 @@ fun ShowDetailScreen(movieWithImages: MovieWithImages, viewModel: DetailScreenVi
     Column(modifier = Modifier.padding(innerPadding)) {
         MovieRow(
             movieWithImages = movieWithImages,
-            onMovieRowClick = {},
-            onFavClick = {id -> viewModel.toggleIsFavorite(id)}
-        )
+            onMovieRowClick = { }
+        ) {
+            viewModel.viewModelScope.launch {
+                Log.d("_log", "MovieRow")
+                viewModel.toggleIsFavorite(movieWithImages)
+            }
+        }
         Player(movieWithImages.movie.trailer)
         MovieLazyRow(movieWithImages)
     }

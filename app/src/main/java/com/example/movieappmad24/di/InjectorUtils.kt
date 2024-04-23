@@ -7,7 +7,7 @@ import com.example.movieappmad24.repositories.MovieRepository
 
 object InjectorUtils {
 
-    private fun getMovieRepository(context: Context): MovieRepository {
+    fun getMovieRepository(context: Context): MovieRepository {
         val database = MovieDatabase.getDatabase(context.applicationContext)
         val movieDao = database.movieDao()
         val movieImageDao = database.movieImageDao()

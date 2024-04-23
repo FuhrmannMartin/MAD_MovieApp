@@ -20,6 +20,7 @@ data class MovieHelper(
     var isFavorite: Boolean = false
 )
 
+
 fun getMoviesWithImages(): List<MovieWithImages> {
     val movieHelpers = getMovies()
     val movieWithImagesList = mutableListOf<MovieWithImages>()
@@ -59,7 +60,8 @@ fun getMovies(): List<MovieHelper> {
                 "https://images-na.ssl-images-amazon.com/images/M/MV5BMTMxOTEwNDcxN15BMl5BanBnXkFtZTcwOTg0MTUzNA@@._V1_SX1777_CR0,0,1777,999_AL_.jpg",
                 "https://images-na.ssl-images-amazon.com/images/M/MV5BMTYxMDg1Nzk1MV5BMl5BanBnXkFtZTcwMDk0MTUzNA@@._V1_SX1500_CR0,0,1500,999_AL_.jpg"),
             trailer = "trailer_placeholder",
-            rating = "7.9"),
+            rating = "7.9",
+            isFavorite = true),
 
         MovieHelper(id = "tt0416449",
             title = "300",

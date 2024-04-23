@@ -36,7 +36,8 @@ fun HomeScreen(navController: NavHostController) {
                     moviesWithImages = moviesState.value,
                     innerPadding = innerPadding,
                     navController = navController,
-                    viewModel = viewModel)
+                    viewModel = viewModel
+                )
             }
         }
     }

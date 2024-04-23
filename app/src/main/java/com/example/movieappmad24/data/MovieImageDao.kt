@@ -6,19 +6,23 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.movieappmad24.models.MovieImage
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieImageDao {
     @Insert
-    fun insert(movieImage: MovieImage)
+    suspend fun insert(movieImage: MovieImage)
 
     @Delete
-    fun delete(movieImage: MovieImage)
+    suspend fun delete(movieImage: MovieImage)
 
     @Update
-    fun update(movieImage: MovieImage)
+    suspend fun update(movieImage: MovieImage)
 
     @Query("SELECT url FROM movieImage WHERE id = :id")
-    fun getUrls(id: String): List<String>
+    fun getUrls(id: String): Flow<List<String>>
+
+    @Query("SELECT url FROM movieImage")
+    fun getAllUrls(): Flow<List<String>>
 
 }

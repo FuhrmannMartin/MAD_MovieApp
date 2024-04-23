@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MovieDao {
     @Insert
-    fun insert(movie: Movie)
+    suspend fun insert(movie: Movie)
 
     @Delete
-    fun delete(movie: Movie)
+    suspend fun delete(movie: Movie)
 
     @Update
-    fun update(movie: Movie)
+    suspend fun update(movie: Movie)
 
     @Query("SELECT * FROM movie")
     fun getAll(): Flow<List<Movie>>
@@ -26,5 +26,5 @@ interface MovieDao {
     fun getFavorite(): Flow<List<Movie>>
 
     @Query("SELECT * FROM movie where id = :id")
-    fun getMovieById(id: String): Flow<Movie?>
+    fun getMovieById(id: String): Flow<Movie?> // Change return type to Flow<Movie?>
 }
