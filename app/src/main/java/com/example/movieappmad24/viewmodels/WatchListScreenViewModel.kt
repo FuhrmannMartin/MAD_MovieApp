@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class WatchListScreenViewModel(override val repository: MovieRepository): ViewModel(), FavoriteToggleViewModelInterface {
     private val _movies = MutableStateFlow<List<MovieWithImages>>(emptyList())
-    override val movies: StateFlow<List<MovieWithImages>> = _movies
+    val movies: StateFlow<List<MovieWithImages>> = _movies
 
     init {
         viewModelScope.launch {

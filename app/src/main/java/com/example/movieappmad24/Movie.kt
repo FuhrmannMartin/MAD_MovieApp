@@ -83,9 +83,6 @@ fun MovieRow(
     var showDetails by remember {
         mutableStateOf(false)
     }
-    var isFavorite by remember {
-        mutableStateOf(movieWithImages.movie.isFavorite)
-    }
 
     Card(
         modifier = Modifier
@@ -118,12 +115,11 @@ fun MovieRow(
                     Icon(
                         modifier = Modifier
                             .clickable {
-                                isFavorite = !isFavorite
                                 onFavClick(movieWithImages)
                             },
                         tint = MaterialTheme.colorScheme.secondary,
                         imageVector =
-                        if (isFavorite) Icons.Default.Favorite
+                        if (movieWithImages.movie.isFavorite) Icons.Default.Favorite
                         else Icons.Default.FavoriteBorder,
                         contentDescription = "Add to favorites"
                     )

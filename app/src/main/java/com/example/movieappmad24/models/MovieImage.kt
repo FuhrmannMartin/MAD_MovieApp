@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
         onDelete = CASCADE // Cascade deletion if Movie is deleted
     )]
 )
-data class MovieImage(
+class MovieImage(
     @PrimaryKey(autoGenerate = true) var dbId: Long = 0,
     val id: String,
     val url: String
