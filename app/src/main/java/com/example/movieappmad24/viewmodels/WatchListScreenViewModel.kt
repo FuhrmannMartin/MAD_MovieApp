@@ -13,12 +13,14 @@ class WatchListScreenViewModel(override val repository: MovieRepository): ViewMo
     private val _movies = MutableStateFlow<List<MovieWithImages>>(emptyList())
     val movies: StateFlow<List<MovieWithImages>> = _movies
 
-    init {
-        viewModelScope.launch {
+    private val moviesJob = viewModelScope.launch {
             repository.getFavoriteMovies().collect { movieList ->
                 _movies.value = movieList
                 Log.d("_Flow", "WatchListScreenViewModel emitting $movieList")
             }
-        }
+    }
+
+    fun clear() {
+        moviesJob.cancel()
     }
 }

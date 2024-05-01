@@ -13,12 +13,15 @@ class HomeScreenViewModel(override val repository: MovieRepository): ViewModel()
     private val _movies = MutableStateFlow<List<MovieWithImages>>(emptyList())
     val movies: StateFlow<List<MovieWithImages>> = _movies
 
-    init {
-        viewModelScope.launch {
+    private val moviesJob = viewModelScope.launch {
             repository.getAllMovies().collect { movieList ->
                 _movies.value = movieList
                 Log.d("_Flow", "HomeScreenViewModel emitting $movieList")
             }
         }
+
+    fun clear() {
+        moviesJob.cancel()
     }
+
 }

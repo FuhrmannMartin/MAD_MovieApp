@@ -3,6 +3,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,6 +22,12 @@ fun HomeScreen(navController: NavHostController) {
         LocalContext.current))
     val moviesState = viewModel.movies.collectAsState()
 
+    DisposableEffect(Unit) {
+        onDispose {
+            // Dispose the ViewModel when HomeScreen is removed from the composition
+            viewModel.clear()
+        }
+    }
 
     MovieAppMAD24Theme {
         // A surface container using the 'background' color from the theme
